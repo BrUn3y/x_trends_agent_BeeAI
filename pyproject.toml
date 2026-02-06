@@ -7,7 +7,7 @@ authors = [{ name = "IBM Corp." }]
 requires-python = ">=3.11,<4.0"
 dependencies = [
     "agentstack-sdk==0.4.0rc1",
-    "beeai_framework>=0.1.68",
+    "beeai_framework>=0.1.76",
 ]
 
 [tool.ruff]
