@@ -22,7 +22,7 @@ The agent:
 Clone the repository and enter the project folder:
 
 ```bash
-git clone <repository-url>
+git clone --branch without_agentstack --single-branch https://github.com/BrUn3y/x_trends_agent_BeeAI.git
 cd x_trends_agent_BeeAI
 ```
 
