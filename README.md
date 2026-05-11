@@ -1,72 +1,104 @@
-# X Trends Agent - Built with BeeAI & Agent Stack SDK
+# X Trends Agent - Built with BeeAI
 
 ## Introduction
 
-The X Trends Agent is an AI-powered conversational system designed to analyze trending topics on X (formerly Twitter). Built using the **BeeAI framework** for orchestration and the **Agent Stack SDK**, it specializes in identifying trending topics by country, researching the context behind each trend, and providing friendly, engaging summaries with emojis and source citations.
+The X Trends Agent is an AI-powered conversational agent designed to analyze trending topics on X (formerly Twitter). It is built with the **BeeAI framework** and runs locally using **Ollama** with the **IBM Granite 4 Tiny** model.
 
-The agent is designed to run entirely locally using **Ollama** and the **IBM Granite 4** model.
+The agent:
+- detects the country mentioned in the prompt,
+- retrieves X trends from `trends24.in`,
+- extracts the top trending topics,
+- synthesizes a friendly summary in natural language.
 
 ## Requirements
 
-### Minimum Requirements
+- **Python:** 3.11 or higher
+- **uv:** installed locally
+- **Ollama:** installed locally
+- **Model:** `granite4:tiny-h`
 
-- **Python:** Version 3.11 or higher.
-- **Dependency Management:** `uv` is recommended for managing Python packages.
-- **Ollama:** Required for running the local LLM (`granite4:tiny-h`).
+## Project Setup
 
-### Python Dependencies
+Clone the repository and enter the project folder:
 
-Main packages used:
-- `beeai-framework`: For orchestrating the agent's reasoning flow and tool use.
-- `agentstack-sdk`: For A2A protocol and server management.
+```bash
+git clone <repository-url>
+cd x_trends_agent_BeeAI
+```
 
-## Installation
+Create a virtual environment with Python 3.12:
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    cd x_trends_agent
-    ```
+```bash
+python3.12 -m venv .venv
+```
 
-2.  **Install dependencies:**
-    ```bash
-    uv sync
-    ```
+Activate the virtual environment:
 
-3.  **Install Ollama and the model:**
-    ```bash
-    # Pull the required model
-    ollama pull granite4:tiny-h
-    ```
+```bash
+source .venv/bin/activate
+```
+
+Install the dependencies:
+
+```bash
+uv sync
+```
+
+Install the Ollama model:
+
+```bash
+ollama pull granite4:tiny-h
+```
 
 ## Running the Agent
 
-1.  **Start the agent:**
-    ```bash
-    uv run server
-    ```
-    The agent will start and be ready on `http://127.0.0.1:8000` (configurable via `PORT` env var).
+Run the agent directly with a prompt:
+
+```bash
+uv run src/beeai_agents/agent.py "What are the 5 most important trends in Mexico?"
+```
+
+You can also run it without arguments:
+
+```bash
+uv run src/beeai_agents/agent.py
+```
+
+In that case, it uses the default fallback prompt.
+
+## Optional Environment Variables
+
+You can override the default model:
+
+```bash
+export LLM_CHAT_MODEL_NAME="ollama:granite4:tiny-h"
+```
+
+You can also provide a default prompt through an environment variable:
+
+```bash
+export X_TRENDS_PROMPT="What are the 5 most important trends in Spain?"
+uv run src/beeai_agents/agent.py
+```
 
 ## How It Works
 
-The agent uses a **RequirementAgent (BeeAI)** to process queries through a dynamic pipeline:
+The agent uses a `RequirementAgent` from BeeAI:
 
-1. **Country Detection:** Uses the LLM to identify if the user is asking about a specific region.
-2. **Trend Retrieval:** Scrapes `trends24.in` specifically for the target country (or global) to get the top 5 trending topics using the **DuckDuckGoSearchTool**.
-3. **Context Research:** For each of the top 5 trends, it performs targeted web searches to find the "why" behind the trend.
-4. **Friendly Synthesis:** Generates a coherent report with emojis (💡, 📰, 🚀) and, most importantly, **includes the source URLs** of the news found.
-
-## Usage Examples
-
-- *"What's trending in Mexico?"*
-- *"Show me global trends on X today"*
-- *"What's happening in Spain?"*
+1. Detects whether the user mentioned a country.
+2. Builds the appropriate `trends24.in` URL.
+3. Uses `DuckDuckGoSearchTool` to retrieve trend page results.
+4. Extracts and summarizes the top trends.
+5. Avoids per-trend searches like `"[Trend Name] news"` to reduce failures and unnecessary tool calls.
 
 ## Project Structure
 
-- `src/beeai_agents/agent.py`: Main logic of the agent, including the BeeAI agent definition and Agent Stack server.
-- `pyproject.toml`: Dependency and script definitions.
+- `src/beeai_agents/agent.py`: main BeeAI standalone agent
+- `pyproject.toml`: project metadata and dependencies
+- `README.md`: setup and usage instructions
 
-## Disclaimer
+## Notes
 
-This agent is built for demonstration purposes. Ensure you have Ollama running locally for the LLM to function properly.
+- Make sure Ollama is running before executing the agent.
+- The project no longer depends on AgentStack.
+- DuckDuckGo access may occasionally fail due to network or upstream service issues.
