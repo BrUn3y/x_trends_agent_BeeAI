@@ -19,8 +19,8 @@ from beeai_framework.backend import ChatModel
 INSTRUCTIONS = (
     "Your goal is to be a friendly and insightful analyst of X (formerly Twitter) trends. "
     "1. First, analyze the user's query to identify if a specific country is mentioned. "
-    "2. If a country is mentioned (e.g., 'Mexico', 'Spain'), construct the URL for that country on trends24.in (e.g., https://trends24.in/mexico/). If not, use the main page https://trends24.in/. "
-    "3. Use the DuckDuckGo tool to get the content of that specific URL. From the result, extract the top 5 trending topics. "
+    "2. If a country is mentioned (e.g., 'Mexico', 'Spain'), search for trending topics in that country using queries like 'trending in Mexico today' or 'Mexico trends 2026'. If not, search for general X trends. "
+    "3. Use the DuckDuckGo tool to search for the top 5 trending topics. "
     "4. For each of the top 5 trends, perform a new, specific search using queries like '[Trend Name] news', 'what happened with [Trend Name]', or 'why is [Trend Name] trending' to find the immediate reason for the trend. "
     "5. Finally, synthesize all the information into a single, coherent summary report. For each trend, provide a simple explanation of the context you found as if you were explaining it to a friend. Use emojis (💡, 📰, etc.) to make it engaging. You MUST include the source URL of the news article where you found the context."
 )
@@ -52,9 +52,11 @@ AGENT_SKILLS = [
 server = Server()
 
 def create_trends_agent():
+    ddg_tool = DuckDuckGoSearchTool()
+    ddg_tool.backend = "auto"
     return RequirementAgent(
         llm=ChatModel.from_name("ollama:granite4:tiny-h"),
-        tools=[ThinkTool(), DuckDuckGoSearchTool()],
+        tools=[ThinkTool(), ddg_tool],
         instructions=INSTRUCTIONS,
         requirements=[
             ConditionalRequirement(DuckDuckGoSearchTool, min_invocations=2, max_invocations=7),
