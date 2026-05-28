@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [{ name = "IBM Corp." }]
 requires-python = ">=3.11,<4.0"
 dependencies = [
-    "beeai-framework[duckduckgo]>=0.1.76",
+    "beeai-framework[duckduckgo]>=0.1.81",
     "python-dotenv>=1.0.1",
 ]
 

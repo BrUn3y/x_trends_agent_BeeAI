@@ -27,9 +27,11 @@ INSTRUCTIONS = (
 
 
 def create_trends_agent() -> RequirementAgent:
+    ddg_tool = DuckDuckGoSearchTool()
+    ddg_tool.backend = "auto"
     return RequirementAgent(
         llm=ChatModel.from_name(os.getenv("LLM_CHAT_MODEL_NAME", "ollama:granite4:tiny-h")),
-        tools=[ThinkTool(), DuckDuckGoSearchTool()],
+        tools=[ThinkTool(), ddg_tool],
         instructions=INSTRUCTIONS,
         requirements=[
             ConditionalRequirement(DuckDuckGoSearchTool, min_invocations=2, max_invocations=7),
