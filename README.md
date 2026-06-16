@@ -1,8 +1,8 @@
-# X Trends Agent - Built with BeeAI
+# X Trends Agent - MCP Server
 
 ## Introduction
 
-The X Trends Agent is an AI-powered conversational agent designed to analyze trending topics on X (formerly Twitter). It is built with the **BeeAI framework** and runs locally using **Ollama** with the **IBM Granite 4 Tiny** model.
+The X Trends Agent is an AI-powered conversational agent designed to analyze trending topics on X (formerly Twitter). It is built with the **BeeAI framework** and exposes a **Model Context Protocol (MCP) Server** to integrate with external systems supporting the MCP standard.
 
 The agent:
 - detects the country mentioned in the prompt,
@@ -22,7 +22,7 @@ The agent:
 Clone the repository and enter the project folder:
 
 ```bash
-git clone --branch without_agentstack --single-branch https://github.com/BrUn3y/x_trends_agent_BeeAI.git
+git clone --branch MCP_server --single-branch https://github.com/BrUn3y/x_trends_agent_BeeAI.git
 cd x_trends_agent_BeeAI
 ```
 
@@ -50,21 +50,33 @@ Install the Ollama model:
 ollama pull granite4:tiny-h
 ```
 
-## Running the Agent
+## Running the MCP Server
 
-Run the agent directly with a prompt:
-
-```bash
-uv run src/beeai_agents/agent.py "What are the 5 most important trends in Mexico?"
-```
-
-You can also run it without arguments:
+Start the MCP server via stdio transport:
 
 ```bash
 uv run src/beeai_agents/agent.py
 ```
 
-In that case, it uses the default fallback prompt.
+The server will communicate via standard input/output (stdio transport).
+
+## Usage
+
+The MCP server exposes the trends agent as a tool available to MCP clients. Connect any MCP-compatible client to interact with the agent.
+
+Example with an MCP client configuration:
+
+```json
+{
+  "mcpServers": {
+    "trends-agent": {
+      "command": "uv",
+      "args": ["run", "src/beeai_agents/agent.py"],
+      "cwd": "/path/to/x_trends_agent_BeeAI"
+    }
+  }
+}
+```
 
 ## Optional Environment Variables
 
@@ -72,13 +84,6 @@ You can override the default model:
 
 ```bash
 export LLM_CHAT_MODEL_NAME="ollama:granite4:tiny-h"
-```
-
-You can also provide a default prompt through an environment variable:
-
-```bash
-export X_TRENDS_PROMPT="What are the 5 most important trends in Spain?"
-uv run src/beeai_agents/agent.py
 ```
 
 ## How It Works
@@ -93,12 +98,12 @@ The agent uses a `RequirementAgent` from BeeAI:
 
 ## Project Structure
 
-- `src/beeai_agents/agent.py`: main BeeAI standalone agent
+- `src/beeai_agents/agent.py`: MCP server implementation
 - `pyproject.toml`: project metadata and dependencies
 - `README.md`: setup and usage instructions
 
 ## Notes
 
-- Make sure Ollama is running before executing the agent.
-- The project no longer depends on AgentStack.
+- Make sure Ollama is running before starting the server.
 - DuckDuckGo access may occasionally fail due to network or upstream service issues.
+- The MCP server uses stdio transport by default.
