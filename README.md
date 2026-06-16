@@ -52,13 +52,19 @@ ollama pull granite4:tiny-h
 
 ## Running the MCP Server
 
-Start the MCP server via HTTP transport on port 9999:
+Start the MCP server via HTTP transport on port 8000 (default):
 
 ```bash
 uv run src/beeai_agents/agent.py
 ```
 
-The server will listen on `http://localhost:9999` (HTTP transport with SSE).
+The server will listen on `http://localhost:8000` (HTTP transport with SSE).
+
+To use a different port:
+
+```bash
+MCP_PORT=9999 uv run src/beeai_agents/agent.py
+```
 
 ## Usage
 
@@ -70,7 +76,7 @@ Example with an MCP client configuration (IBM Bob):
 {
   "mcpServers": {
     "x-trends-agent": {
-      "url": "http://localhost:9999",
+      "url": "http://localhost:8000",
       "transport": "sse"
     }
   }
@@ -83,7 +89,7 @@ For a remote server, simply change the URL:
 {
   "mcpServers": {
     "x-trends-agent": {
-      "url": "http://your-server.com:9999",
+      "url": "http://your-server.com:8000",
       "transport": "sse"
     }
   }

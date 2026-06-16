@@ -40,6 +40,7 @@ def create_trends_agent() -> RequirementAgent:
 if __name__ == "__main__":
     agent = create_trends_agent()
 
-    server = MCPServer(config=MCPServerConfig(transport="streamable-http", port=9999))
+    port = int(os.getenv("MCP_PORT", "8000"))
+    server = MCPServer(config=MCPServerConfig(transport="streamable-http", port=port))
     server.register_many([agent])
     server.serve()
