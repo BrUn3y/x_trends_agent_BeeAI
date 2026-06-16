@@ -1,8 +1,8 @@
-# X Trends Agent - Built with BeeAI
+# X Trends Agent - OpenAI API
 
 ## Introduction
 
-The X Trends Agent is an AI-powered conversational agent designed to analyze trending topics on X (formerly Twitter). It is built with the **BeeAI framework** and runs locally using **Ollama** with the **IBM Granite 4 Tiny** model.
+The X Trends Agent is an AI-powered conversational agent designed to analyze trending topics on X (formerly Twitter). It is built with the **BeeAI framework** and exposes a **OpenAI-compatible API** to consume the agent.
 
 The agent:
 - detects the country mentioned in the prompt,
@@ -22,7 +22,7 @@ The agent:
 Clone the repository and enter the project folder:
 
 ```bash
-git clone --branch without_agentstack --single-branch https://github.com/BrUn3y/x_trends_agent_BeeAI.git
+git clone --branch OpenAI_API --single-branch https://github.com/BrUn3y/x_trends_agent_BeeAI.git
 cd x_trends_agent_BeeAI
 ```
 
@@ -50,35 +50,17 @@ Install the Ollama model:
 ollama pull granite4:tiny-h
 ```
 
-## Running the Agent
+## Running the OpenAI API Server
 
-### CLI Mode
-
-Run the agent directly with a prompt:
-
-```bash
-uv run src/beeai_agents/agent.py "What are the 5 most important trends in Mexico?"
-```
-
-You can also run it without arguments:
+Start the API server:
 
 ```bash
 uv run src/beeai_agents/agent.py
 ```
 
-In that case, it uses the default fallback prompt.
-
-### OpenAI API Mode
-
-This branch exposes the agent as an OpenAI-compatible API server.
-
-Start the API server:
-
-```bash
-uv run src/beeai_agents/api_server.py
-```
-
 The server will run on `http://localhost:9998` (OpenAI chat completions endpoint).
+
+## Usage
 
 Query the agent via cURL:
 
@@ -118,13 +100,6 @@ You can override the default model:
 export LLM_CHAT_MODEL_NAME="ollama:granite4:tiny-h"
 ```
 
-You can also provide a default prompt through an environment variable:
-
-```bash
-export X_TRENDS_PROMPT="What are the 5 most important trends in Spain?"
-uv run src/beeai_agents/agent.py
-```
-
 ## How It Works
 
 The agent uses a `RequirementAgent` from BeeAI:
@@ -137,12 +112,11 @@ The agent uses a `RequirementAgent` from BeeAI:
 
 ## Project Structure
 
-- `src/beeai_agents/agent.py`: main BeeAI standalone agent
+- `src/beeai_agents/agent.py`: OpenAI API server implementation
 - `pyproject.toml`: project metadata and dependencies
 - `README.md`: setup and usage instructions
 
 ## Notes
 
-- Make sure Ollama is running before executing the agent.
-- The project no longer depends on AgentStack.
+- Make sure Ollama is running before starting the server.
 - DuckDuckGo access may occasionally fail due to network or upstream service issues.

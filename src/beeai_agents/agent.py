@@ -1,16 +1,13 @@
-import asyncio
 import os
-import sys
-import traceback
-
+from beeai_framework.adapters.openai.serve.server import OpenAIServer, OpenAIServerConfig
 from beeai_framework.agents.requirement import RequirementAgent
 from beeai_framework.agents.requirement.requirements.conditional import ConditionalRequirement
 from beeai_framework.backend import ChatModel
-from beeai_framework.errors import FrameworkError
-from beeai_framework.middleware.trajectory import GlobalTrajectoryMiddleware
+from beeai_framework.memory import UnconstrainedMemory
 from beeai_framework.tools.search.duckduckgo import DuckDuckGoSearchTool
 from beeai_framework.tools.think import ThinkTool
 from beeai_framework.tools.tool import Tool
+from beeai_framework.middleware.trajectory import GlobalTrajectoryMiddleware
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -38,23 +35,14 @@ def create_trends_agent() -> RequirementAgent:
             ConditionalRequirement(ThinkTool, min_invocations=1),
         ],
         middlewares=[GlobalTrajectoryMiddleware(included=[Tool])],
+        memory=UnconstrainedMemory(),
     )
 
 
-async def main() -> None:
+if __name__ == "__main__":
+    llm = ChatModel.from_name(os.getenv("LLM_CHAT_MODEL_NAME", "ollama:granite4:tiny-h"))
     agent = create_trends_agent()
 
-    prompt = " ".join(sys.argv[1:]).strip()
-    if not prompt:
-        prompt = os.getenv("X_TRENDS_PROMPT", "What are the 5 most important trends in the United States?")
-
-    response = await agent.run(prompt, max_iterations=8, max_retries_per_step=3, total_max_retries=10)
-    print(response.last_message.text)
-
-
-if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except FrameworkError as e:
-        traceback.print_exc()
-        sys.exit(e.explain())
+    server = OpenAIServer(config=OpenAIServerConfig(port=9998))
+    server.register(agent, name="agent")
+    server.serve()
