@@ -52,6 +52,8 @@ ollama pull granite4:tiny-h
 
 ## Running the Agent
 
+### CLI Mode
+
 Run the agent directly with a prompt:
 
 ```bash
@@ -65,6 +67,48 @@ uv run src/beeai_agents/agent.py
 ```
 
 In that case, it uses the default fallback prompt.
+
+### OpenAI API Mode
+
+This branch exposes the agent as an OpenAI-compatible API server.
+
+Start the API server:
+
+```bash
+uv run src/beeai_agents/api_server.py
+```
+
+The server will run on `http://localhost:9998` (OpenAI chat completions endpoint).
+
+Query the agent via cURL:
+
+```bash
+curl -X POST http://localhost:9998/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "agent",
+    "messages": [
+      {"role": "user", "content": "What are the trends in Mexico?"}
+    ]
+  }'
+```
+
+Or use Python with the `requests` library:
+
+```python
+import requests
+
+response = requests.post(
+    "http://localhost:9998/chat/completions",
+    json={
+        "model": "agent",
+        "messages": [
+            {"role": "user", "content": "What are the trends in Mexico?"}
+        ]
+    }
+)
+print(response.json()["choices"][0]["message"]["content"])
+```
 
 ## Optional Environment Variables
 
