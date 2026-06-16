@@ -52,23 +52,17 @@ ollama pull granite4:tiny-h
 
 ## Running the MCP Server
 
-Start the MCP server via HTTP transport on port 8000 (default):
+The MCP server runs with stdio transport (standard input/output). Bob will automatically start and manage the server process.
+
+For local development, you can also run it directly:
 
 ```bash
 uv run src/beeai_agents/agent.py
 ```
 
-The server will listen on `http://localhost:8000` (HTTP transport with SSE).
-
-To use a different port:
-
-```bash
-MCP_PORT=9999 uv run src/beeai_agents/agent.py
-```
-
 ## Usage
 
-The MCP server exposes the trends agent as a tool available to MCP clients. Connect any MCP-compatible client to interact with the agent via HTTP.
+The MCP server exposes the trends agent as a tool available to MCP clients. Bob automatically manages the server process via stdio.
 
 Example with an MCP client configuration (IBM Bob):
 
@@ -76,25 +70,15 @@ Example with an MCP client configuration (IBM Bob):
 {
   "mcpServers": {
     "x-trends-agent": {
-      "url": "http://localhost:8000",
-      "transport": "sse"
+      "command": "uv",
+      "args": ["run", "src/beeai_agents/agent.py"],
+      "cwd": "/path/to/x_trends_agent_BeeAI"
     }
   }
 }
 ```
 
-For a remote server, simply change the URL:
-
-```json
-{
-  "mcpServers": {
-    "x-trends-agent": {
-      "url": "http://your-server.com:8000",
-      "transport": "sse"
-    }
-  }
-}
-```
+**For deploying on a remote server**, you would need to configure a separate HTTP MCP server wrapper.
 
 ## Optional Environment Variables
 
